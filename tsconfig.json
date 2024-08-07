@@ -1,0 +1,16 @@
+{
+    "compilerOptions": {
+        "module": "NodeNext",
+        "types": ["jest"],
+        "esModuleInterop": true,
+        "target": "es6",
+        "moduleResolution": "NodeNext",
+        "outDir": "dist",
+        "isolatedModules": true,
+        "paths": {
+            "@/*": ["./src/*"]
+        }
+    },
+    "lib": ["es2015"],
+    "include": ["src", "src/global.d.ts", "src/jest.d.ts"]
+}
