@@ -1,3 +1,5 @@
+import lens, { view } from './lenses';
+
 const user = { name: 'Alice', address: { city: 'Wonderland', zip: '12345' } };
 
 type Address = {

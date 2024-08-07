@@ -1,16 +1,30 @@
 {
     "compilerOptions": {
-        "module": "NodeNext",
-        "types": ["jest"],
-        "esModuleInterop": true,
-        "target": "es6",
-        "moduleResolution": "NodeNext",
-        "outDir": "dist",
-        "isolatedModules": true,
+        "target": "ES2022",
+        "useDefineForClassFields": true,
+        "lib": ["ES2022", "DOM", "DOM.Iterable"],
+        "module": "ESNext",
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "skipLibCheck": true,
+        "baseUrl": "./",
         "paths": {
             "@/*": ["./src/*"]
-        }
+        },
+
+        /* Bundler mode */
+        "moduleResolution": "bundler",
+        "allowImportingTsExtensions": true,
+        "resolveJsonModule": true,
+        "isolatedModules": true,
+        "noEmit": true,
+        "jsx": "react-jsx",
+
+        /* Linting */
+        // "strict": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "noFallthroughCasesInSwitch": true
     },
-    "lib": ["es2015"],
-    "include": ["src", "src/global.d.ts", "src/jest.d.ts"]
+    "include": ["src"]
 }
