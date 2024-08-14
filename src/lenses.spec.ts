@@ -24,25 +24,87 @@ describe(`lenses`, () => {
             address: { ...user.address, city: newCity },
         })
     );
-    it(`view should retrieve the value using the lens`, () => {
-        expect(view(nameLens, user)).toBe('Alice');
-        expect(view(cityLens, user)).toBe('Wonderland');
-    });
-    it(`set should update the value using the lens`, () => {
-        const renamedUser = set(nameLens, 'Gerald', user);
-        expect(renamedUser).toEqual({
-            name: 'Gerald',
-            address: { city: 'Wonderland', zip: '12345' },
+    describe('view', () => {
+        it(`should retrieve the value using the lens`, () => {
+            expect(view(nameLens, user)).toBe('Alice');
+            expect(view(cityLens, user)).toBe('Wonderland');
         });
-        expect(renamedUser).not.toBe(user);
     });
-    test('over should modify the value using the lens', () => {
-        const toUpperCase = (text: string) => text.toUpperCase();
-        const modifiedUser = over(nameLens, toUpperCase, user);
-        expect(modifiedUser).toEqual({
-            name: 'ALICE',
-            address: { city: 'Wonderland', zip: '12345' },
+    describe('set', () => {
+        it(`should update the value using the lens`, () => {
+            const renamedUser = set(nameLens, 'Gerald', user);
+            expect(renamedUser).toEqual({
+                name: 'Gerald',
+                address: { city: 'Wonderland', zip: '12345' },
+            });
+            expect(renamedUser).not.toBe(user);
         });
-        expect(modifiedUser).not.toBe(user);
+        it('set should copy the state correctly and only update the necessary parts', () => {
+            interface DeepState {
+                user: User;
+                meta: {
+                    created: string;
+                    modified: string;
+                };
+            }
+            const deepState: DeepState = {
+                user: {
+                    name: 'Alice',
+                    address: { city: 'Wonderland', zip: '12345' },
+                },
+                meta: { created: '2023-01-01', modified: '2024-01-01' },
+            };
+
+            const userLens = lens<DeepState, User>(
+                (state) => state.user,
+                (newUser, state) => ({ ...state, user: newUser })
+            );
+
+            const cityLens = lens<User, string>(
+                (user) => user.address.city,
+                (newCity, user) => ({
+                    ...user,
+                    address: { ...user.address, city: newCity },
+                })
+            );
+
+            const deepCityLens = lens<DeepState, string>(
+                (state) => view(cityLens, state.user),
+                (newCity, state) =>
+                    set(userLens, set(cityLens, newCity, state.user), state)
+            );
+            const updatedState = set(deepCityLens, 'Oz', deepState);
+            expect(updatedState).toEqual({
+                user: {
+                    name: 'Alice',
+                    address: { city: 'Oz', zip: '12345' },
+                },
+                meta: { created: '2023-01-01', modified: '2024-01-01' },
+            });
+            expect(updatedState).not.toBe(deepState);
+            expect(updatedState.meta).toBe(deepState.meta);
+            expect(updatedState.meta.created).toBe(deepState.meta.created);
+            expect(updatedState.meta.modified).toBe(deepState.meta.modified);
+            expect(updatedState.user).not.toBe(deepState.user);
+            expect(updatedState.user.address).not.toBe(deepState.user.address);
+            expect(updatedState.user.name).toBe(deepState.user.name);
+            expect(updatedState.user.address.city).not.toBe(
+                deepState.user.address.city
+            );
+            expect(updatedState.user.address.zip).toBe(
+                deepState.user.address.zip
+            );
+        });
+    });
+    describe('over', () => {
+        it('should modify the value using the lens', () => {
+            const toUpperCase = (text: string) => text.toUpperCase();
+            const modifiedUser = over(nameLens, toUpperCase, user);
+            expect(modifiedUser).toEqual({
+                name: 'ALICE',
+                address: { city: 'Wonderland', zip: '12345' },
+            });
+            expect(modifiedUser).not.toBe(user);
+        });
     });
 });
