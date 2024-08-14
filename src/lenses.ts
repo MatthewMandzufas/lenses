@@ -19,4 +19,10 @@ export const view = <S, A>(lens: Lens<S, A>, state: S): A => lens.get(state);
 export const set = <S, A>(lens: Lens<S, A>, newValue: any, state: S): S =>
     lens.set(newValue, state);
 
+export const over = <S, A>(
+    lens: Lens<S, A>,
+    fn: (value: A) => A,
+    state: S
+): S => lens.set(fn(lens.get(state)), state);
+
 export default lens;

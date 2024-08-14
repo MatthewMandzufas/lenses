@@ -1,4 +1,4 @@
-import lens, { set, view } from './lenses';
+import lens, { over, set, view } from './lenses';
 
 const user = { name: 'Alice', address: { city: 'Wonderland', zip: '12345' } };
 
@@ -30,7 +30,7 @@ describe(`lenses`, () => {
     });
     it(`set should update the value using the lens`, () => {
         const renamedUser = set(nameLens, 'Gerald', user);
-        expect(view(nameLens, renamedUser)).toEqual({
+        expect(renamedUser).toEqual({
             name: 'Gerald',
             address: { city: 'Wonderland', zip: '12345' },
         });
@@ -38,8 +38,8 @@ describe(`lenses`, () => {
     });
     test('over should modify the value using the lens', () => {
         const toUpperCase = (text: string) => text.toUpperCase();
-        const modifiedUser = modify(nameLens, toUpperCase, user);
-        expect(view(nameLens, modifiedUser)).toEqual({
+        const modifiedUser = over(nameLens, toUpperCase, user);
+        expect(modifiedUser).toEqual({
             name: 'ALICE',
             address: { city: 'Wonderland', zip: '12345' },
         });
