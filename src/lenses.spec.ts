@@ -1,4 +1,4 @@
-import lens, { view } from './lenses';
+import lens, { set, view } from './lenses';
 
 const user = { name: 'Alice', address: { city: 'Wonderland', zip: '12345' } };
 
